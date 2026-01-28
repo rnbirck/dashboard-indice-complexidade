@@ -27,7 +27,7 @@ from src.config import (
     INDEX_LABELS,
     PRIMARY_COLOR,
 )
-from src.data_loader import (
+from update_load_data import (
     get_country_list,
     get_country_data,
     get_year_range,
