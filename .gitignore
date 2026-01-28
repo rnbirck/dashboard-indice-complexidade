@@ -1,0 +1,14 @@
+*.csv
+credentials.json
+
+.env
+.env.*
+.streamlit/secrets.toml
+
+*.pyc
+__pycache__/
+*.egg-info/
+venv/
+
+.vscode/
+.idea/
