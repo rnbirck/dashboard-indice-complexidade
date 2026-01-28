@@ -77,21 +77,6 @@ st.markdown(
         border-radius: 5px;
         border-left: 4px solid #4C82F7;
     }
-    /* Hide the problematic indicator line in option_menu */
-    div[data-testid="stHorizontalBlock"] .nav-link-horizontal {
-        border-bottom: none !important;
-    }
-    .nav-link {
-        border: none !important;
-    }
-    .nav-link-horizontal {
-        border-top: none !important;
-        border-bottom: none !important;
-    }
-    /* Style for the menu container */
-    .st-emotion-cache-1kyxreq {
-        justify-content: center !important;
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -971,7 +956,7 @@ def render_home_page():
     with col1:
         st.markdown(
             """
-        <div style="background-color: #e8f4f8; padding: 20px; border-radius: 10px; text-align: center; height: 180px;">
+        <div style="background-color: #e8f4f8; padding: 20px; border-radius: 10px; text-align: center; height: 150px;">
             <h4>📊 Dashboard</h4>
             <p style="font-size: 13px;">Interactive visualizations, country comparisons, and trend analysis</p>
         </div>
@@ -982,7 +967,7 @@ def render_home_page():
     with col2:
         st.markdown(
             """
-        <div style="background-color: #fff3e0; padding: 20px; border-radius: 10px; text-align: center; height: 180px;">
+        <div style="background-color: #fff3e0; padding: 20px; border-radius: 10px; text-align: center; height: 150px;">
             <h4>📚 Methodology</h4>
             <p style="font-size: 13px;">Learn about index calculation, data sources, and methodology</p>
         </div>
@@ -993,7 +978,7 @@ def render_home_page():
     with col3:
         st.markdown(
             """
-        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; text-align: center; height: 180px;">
+        <div style="background-color: #e8f5e9; padding: 20px; border-radius: 10px; text-align: center; height: 150px;">
             <h4>👥 Authors</h4>
             <p style="font-size: 13px;">Meet the research team behind this project</p>
         </div>
@@ -1004,7 +989,7 @@ def render_home_page():
     with col4:
         st.markdown(
             """
-        <div style="background-color: #fce4ec; padding: 20px; border-radius: 10px; text-align: center; height: 180px;">
+        <div style="background-color: #fce4ec; padding: 20px; border-radius: 10px; text-align: center; height: 150px;">
             <h4>📥 Data Download</h4>
             <p style="font-size: 13px;">Download data in CSV, Excel, or JSON format</p>
         </div>
@@ -1019,7 +1004,7 @@ def render_home_page():
         """
     ### 🚀 Getting Started
     
-    1. **Click on "Dashboard"** in the navigation menu above
+    1. **Click on "Dashboard"** in the navigation menu at the top of the page
     2. **Select a country** from the sidebar dropdown
     3. **Explore the visualizations** - switch between different chart types
     4. **Compare countries** by selecting additional countries in the sidebar
@@ -1049,40 +1034,48 @@ def main():
     # ==========================================================================
     # TOP NAVIGATION MENU
     # ==========================================================================
+    # Check if navigation was triggered from home page buttons
     selected_page = option_menu(
         menu_title=None,
         options=["Home", "Dashboard", "Methodology", "Authors", "Data Download"],
-        icons=["house-fill", "bar-chart-fill", "book", "people-fill", "download"],
+        icons=["house-door", "bar-chart-line", "file-text", "person-badge", "download"],
         menu_icon="cast",
         default_index=0,
         orientation="horizontal",
         styles={
             "container": {
-                "padding": "5px 10px",
+                "padding": "8px",
                 "background-color": "transparent",
-                "margin": "0px",
+                "margin": "0",
+                "display": "flex",
+                "justify-content": "center",
+                "gap": "10px",
             },
-            "icon": {"color": "#4C82F7", "font-size": "16px"},
+            "icon": {
+                "color": "inherit",
+                "font-size": "15px",
+            },
             "nav-link": {
                 "font-size": "14px",
+                "font-weight": "500",
                 "text-align": "center",
-                "margin": "0px 5px",
-                "padding": "12px 25px",
-                "border-radius": "8px",
+                "padding": "12px 28px",
+                "border-radius": "25px",
+                "color": "#1a1a1a",
                 "background-color": "#f0f2f6",
-                "color": "#31333F",
-                "--hover-color": "#e0e2e6",
+                "--hover-color": "#e0e4eb",
+                "transition": "all 0.2s ease",
+                "border": "1px solid #e0e4eb",
             },
             "nav-link-selected": {
-                "background-color": "#4C82F7",
+                "background": "linear-gradient(135deg, #4C82F7 0%, #3a6fd8 100%)",
                 "color": "white",
                 "font-weight": "600",
-                "border-radius": "8px",
+                "border": "none",
+                "box-shadow": "0 4px 15px rgba(76, 130, 247, 0.35)",
             },
         },
     )
-
-    st.markdown("---")
 
     # ==========================================================================
     # SIDEBAR - Always visible with filters
