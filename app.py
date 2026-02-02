@@ -22,12 +22,11 @@ load_dotenv()
 # ==============================================================================
 # LOCAL IMPORTS
 # ==============================================================================
-from src.config import (
+from src.config import (  # noqa: E402
     INDEX_COLORS,
     INDEX_LABELS,
-    PRIMARY_COLOR,
 )
-from update_load_data import (
+from update_load_data import (  # noqa: E402
     get_country_list,
     get_country_data,
     get_year_range,
@@ -253,29 +252,55 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
     """Render the index evolution chart."""
     st.subheader(f"Index Evolution - {selected_country}")
 
+    # Chart type selector
+    col1, col2 = st.columns([3, 1])
+    with col2:
+        chart_type = st.radio(
+            "Chart Type",
+            options=["Line", "Bar"],
+            horizontal=True,
+            key="evolution_chart_type",
+        )
+
     fig_evolution = go.Figure()
 
-    for col in [
+    indices_cols = [
         "indice_socio_cultural",
         "indice_mercados_negocios",
         "indice_empreendedorismo",
         "indice_eficiencia_governo",
         "indice_ambiente_juridico",
         "indice_total",
-    ]:
-        fig_evolution.add_trace(
-            go.Scatter(
-                x=df_main_filtered["year"],
-                y=df_main_filtered[col],
-                mode="lines+markers+text",
-                name=INDEX_LABELS[col],
-                line=dict(color=INDEX_COLORS[col], width=3),
-                marker=dict(size=8),
-                text=[f"{val:.2f}" for val in df_main_filtered[col]],
-                textposition="top center",
-                textfont=dict(size=10, color="black"),
+    ]
+
+    if chart_type == "Line":
+        for col in indices_cols:
+            fig_evolution.add_trace(
+                go.Scatter(
+                    x=df_main_filtered["year"],
+                    y=df_main_filtered[col],
+                    mode="lines+markers+text",
+                    name=INDEX_LABELS[col],
+                    line=dict(color=INDEX_COLORS[col], width=3),
+                    marker=dict(size=8),
+                    text=[f"{val:.2f}" for val in df_main_filtered[col]],
+                    textposition="top center",
+                    textfont=dict(size=10, color="black"),
+                )
             )
-        )
+    else:  # Bar chart
+        for col in indices_cols:
+            fig_evolution.add_trace(
+                go.Bar(
+                    x=df_main_filtered["year"],
+                    y=df_main_filtered[col],
+                    name=INDEX_LABELS[col],
+                    marker=dict(color=INDEX_COLORS[col]),
+                    text=[f"{val:.2f}" for val in df_main_filtered[col]],
+                    textposition="outside",
+                    textfont=dict(size=10, color="black"),
+                )
+            )
 
     fig_evolution.update_layout(
         xaxis_title="Year",
@@ -299,6 +324,7 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
             xanchor="center",
             x=0.5,
         ),
+        barmode="group" if chart_type == "Bar" else None,
     )
 
     st.plotly_chart(fig_evolution, use_container_width=True)
@@ -312,20 +338,33 @@ def render_comparison_chart(
     """Render the country comparison chart."""
     st.subheader("Compare Index Across Countries")
 
-    # Select index to compare
-    index_to_compare = st.selectbox(
-        "Select Index",
-        options=[
-            "indice_total",
-            "indice_socio_cultural",
-            "indice_mercados_negocios",
-            "indice_empreendedorismo",
-            "indice_eficiencia_governo",
-            "indice_ambiente_juridico",
-        ],
-        format_func=lambda x: INDEX_LABELS[x],
-        key="index_comparison",
-    )
+    # Controls in columns
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        # Select index to compare
+        index_to_compare = st.selectbox(
+            "Select Index",
+            options=[
+                "indice_total",
+                "indice_socio_cultural",
+                "indice_mercados_negocios",
+                "indice_empreendedorismo",
+                "indice_eficiencia_governo",
+                "indice_ambiente_juridico",
+            ],
+            format_func=lambda x: INDEX_LABELS[x],
+            key="index_comparison",
+        )
+
+    with col2:
+        # Chart type selector
+        chart_type = st.radio(
+            "Chart Type",
+            options=["Line", "Bar"],
+            horizontal=True,
+            key="comparison_chart_type",
+        )
 
     # Determine countries to compare
     countries_to_compare = (
@@ -345,21 +384,36 @@ def render_comparison_chart(
     # Create comparison chart
     fig_comparison = go.Figure()
 
-    for country in countries_to_compare:
-        df_country = df_comparison[df_comparison["country_name"] == country]
-        fig_comparison.add_trace(
-            go.Scatter(
-                x=df_country["year"],
-                y=df_country[index_to_compare],
-                mode="lines+markers+text",
-                name=country,
-                line=dict(width=3, color=country_colors[country]),
-                marker=dict(size=8, color=country_colors[country]),
-                text=[f"{val:.2f}" for val in df_country[index_to_compare]],
-                textposition="top center",
-                textfont=dict(size=10, color="black"),
+    if chart_type == "Line":
+        for country in countries_to_compare:
+            df_country = df_comparison[df_comparison["country_name"] == country]
+            fig_comparison.add_trace(
+                go.Scatter(
+                    x=df_country["year"],
+                    y=df_country[index_to_compare],
+                    mode="lines+markers+text",
+                    name=country,
+                    line=dict(width=3, color=country_colors[country]),
+                    marker=dict(size=8, color=country_colors[country]),
+                    text=[f"{val:.2f}" for val in df_country[index_to_compare]],
+                    textposition="top center",
+                    textfont=dict(size=10, color="black"),
+                )
             )
-        )
+    else:  # Bar chart
+        for country in countries_to_compare:
+            df_country = df_comparison[df_comparison["country_name"] == country]
+            fig_comparison.add_trace(
+                go.Bar(
+                    x=df_country["year"],
+                    y=df_country[index_to_compare],
+                    name=country,
+                    marker=dict(color=country_colors[country]),
+                    text=[f"{val:.2f}" for val in df_country[index_to_compare]],
+                    textposition="outside",
+                    textfont=dict(size=10, color="black"),
+                )
+            )
 
     fig_comparison.update_layout(
         title=f"{INDEX_LABELS[index_to_compare]} - Country Comparison",
@@ -384,6 +438,7 @@ def render_comparison_chart(
             xanchor="center",
             x=0.5,
         ),
+        barmode="group" if chart_type == "Bar" else None,
     )
 
     st.plotly_chart(fig_comparison, use_container_width=True)
