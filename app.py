@@ -337,13 +337,14 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
                 text=[f"{val:.2f}" for val in df_main_filtered[col]],
                 textposition="top center",
                 textfont=dict(size=10, color="black"),
+                hovertemplate="<b>%{fullData.name}</b><br>Year: %{x}<br>Value: %{y:.6f}<extra></extra>",
             )
         )
 
     fig_evolution.update_layout(
         xaxis_title="Year",
         yaxis_title="Index Value",
-        hovermode="x unified",
+        hovermode="closest",
         height=500,
         template="plotly_white",
         font=dict(color="black"),
@@ -423,7 +424,7 @@ def render_comparison_chart(
                 text=[f"{val:.2f}" for val in df_country[index_to_compare]],
                 textposition="top center",
                 textfont=dict(size=10, color="black"),
-                hovertemplate="<b>%{fullData.name}</b><br>Year: %{x}<br>Value: %{y:.2f}<extra></extra>",
+                hovertemplate="<b>%{fullData.name}</b><br>Year: %{x}<br>Value: %{y:.6f}<extra></extra>",
             )
         )
 
@@ -556,7 +557,7 @@ def render_radar_chart(
                         hovertemplate=(
                             f"<b>{country}</b><br>"
                             "%{theta}<br>"
-                            "<b>%{r:.1f}</b>"
+                            "<b>%{r:.6f}</b>"
                             "<extra></extra>"
                         ),
                         marker=dict(
