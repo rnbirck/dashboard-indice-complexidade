@@ -5,7 +5,7 @@
 A comprehensive dashboard for visualizing and analyzing the Institutional
 Complexity Index across countries and time periods.
 
-Author: Research Team
+Author: Renan Birck
 Version: 1.0.0
 """
 
