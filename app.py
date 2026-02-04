@@ -886,7 +886,25 @@ def render_download_page():
 
     # Preview data
     st.markdown("### Data Preview")
-    st.dataframe(df_download.head(10), use_container_width=True)
+
+    # Format numeric columns to 6 decimal places for preview
+    df_preview = df_download.head(10).copy()
+    numeric_cols = [
+        "Socio-Cultural Index",
+        "Markets & Business Index",
+        "Entrepreneurship Index",
+        "Government Efficiency Index",
+        "Legal Environment Index",
+        "Total Complexity Index",
+    ]
+
+    for col in numeric_cols:
+        if col in df_preview.columns:
+            df_preview[col] = df_preview[col].apply(
+                lambda x: f"{x:.6f}" if pd.notnull(x) else x
+            )
+
+    st.dataframe(df_preview, use_container_width=True)
 
     st.markdown("---")
 
