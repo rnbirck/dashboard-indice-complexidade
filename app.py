@@ -159,108 +159,160 @@ def render_dashboard_sidebar(countries: list, year_min: int, year_max: int):
     return selected_country, comparison_countries, year_range
 
 
-def render_metrics(df_main_filtered: pd.DataFrame):
-    """Render key metrics cards."""
+def render_metrics(df_main_filtered: pd.DataFrame, selected_country: str):
+    """Render key metrics cards showing country rankings."""
     latest_year_data = df_main_filtered.iloc[-1]
     latest_year = int(latest_year_data["year"])
 
-    # Get previous year data for delta calculation
+    # Load all countries data for the latest year to calculate rankings
+    df_all_latest = load_complexity_data(years=[latest_year])
+
+    # Calculate rankings for each index (lower rank = better performance)
+    indices = [
+        "indice_socio_cultural",
+        "indice_mercados_negocios",
+        "indice_empreendedorismo",
+        "indice_eficiencia_governo",
+        "indice_ambiente_juridico",
+        "indice_total",
+    ]
+
+    # Get rankings and previous year rankings for delta
+    rankings_current = {}
+    rankings_previous = {}
+
+    for idx in indices:
+        # Current year ranking (descending order - higher values = better rank)
+        df_all_latest[f"rank_{idx}"] = df_all_latest[idx].rank(
+            ascending=False, method="min"
+        )
+        current_rank = int(
+            df_all_latest[df_all_latest["country_name"] == selected_country][
+                f"rank_{idx}"
+            ].values[0]
+        )
+        total_countries = len(df_all_latest)
+        rankings_current[idx] = (current_rank, total_countries)
+
+    # Get previous year rankings for delta calculation
     if len(df_main_filtered) > 1:
-        previous_year_data = df_main_filtered.iloc[-2]
-        delta_socio = (
-            latest_year_data["indice_socio_cultural"]
-            - previous_year_data["indice_socio_cultural"]
-        )
-        delta_mercados = (
-            latest_year_data["indice_mercados_negocios"]
-            - previous_year_data["indice_mercados_negocios"]
-        )
-        delta_empre = (
-            latest_year_data["indice_empreendedorismo"]
-            - previous_year_data["indice_empreendedorismo"]
-        )
-        delta_governo = (
-            latest_year_data["indice_eficiencia_governo"]
-            - previous_year_data["indice_eficiencia_governo"]
-        )
-        delta_juridico = (
-            latest_year_data["indice_ambiente_juridico"]
-            - previous_year_data["indice_ambiente_juridico"]
-        )
-        delta_total = (
-            latest_year_data["indice_total"] - previous_year_data["indice_total"]
-        )
-        previous_year = int(previous_year_data["year"])
+        previous_year = int(df_main_filtered.iloc[-2]["year"])
+        df_all_previous = load_complexity_data(years=[previous_year])
+
+        for idx in indices:
+            df_all_previous[f"rank_{idx}"] = df_all_previous[idx].rank(
+                ascending=False, method="min"
+            )
+            prev_rank = int(
+                df_all_previous[df_all_previous["country_name"] == selected_country][
+                    f"rank_{idx}"
+                ].values[0]
+            )
+            rankings_previous[idx] = prev_rank
     else:
-        delta_socio = delta_mercados = delta_empre = None
-        delta_governo = delta_juridico = delta_total = None
         previous_year = None
 
     # Display key metrics - All 6 indicators
     col1, col2, col3, col4, col5, col6 = st.columns(6)
 
     with col1:
+        rank, total = rankings_current["indice_socio_cultural"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_socio_cultural" in rankings_previous:
+            # Delta negativo = melhoria (diminuiu número = subiu posições)
+            delta_val = rank - rankings_previous["indice_socio_cultural"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"👥 Socio-Cultural ({latest_year})",
-            value=f"{latest_year_data['indice_socio_cultural']:.2f}",
-            delta=f"{delta_socio:.2f} p.p" if delta_socio is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
     with col2:
+        rank, total = rankings_current["indice_mercados_negocios"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_mercados_negocios" in rankings_previous:
+            delta_val = rank - rankings_previous["indice_mercados_negocios"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"💼 Markets & Business ({latest_year})",
-            value=f"{latest_year_data['indice_mercados_negocios']:.2f}",
-            delta=f"{delta_mercados:.2f} p.p" if delta_mercados is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
     with col3:
+        rank, total = rankings_current["indice_empreendedorismo"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_empreendedorismo" in rankings_previous:
+            delta_val = rank - rankings_previous["indice_empreendedorismo"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"🚀 Entrepreneurship ({latest_year})",
-            value=f"{latest_year_data['indice_empreendedorismo']:.2f}",
-            delta=f"{delta_empre:.2f} p.p" if delta_empre is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
     with col4:
+        rank, total = rankings_current["indice_eficiencia_governo"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_eficiencia_governo" in rankings_previous:
+            delta_val = rank - rankings_previous["indice_eficiencia_governo"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"🏛️ Government Efficiency ({latest_year})",
-            value=f"{latest_year_data['indice_eficiencia_governo']:.2f}",
-            delta=f"{delta_governo:.2f} p.p" if delta_governo is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
     with col5:
+        rank, total = rankings_current["indice_ambiente_juridico"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_ambiente_juridico" in rankings_previous:
+            delta_val = rank - rankings_previous["indice_ambiente_juridico"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"⚖️ Legal Environment ({latest_year})",
-            value=f"{latest_year_data['indice_ambiente_juridico']:.2f}",
-            delta=f"{delta_juridico:.2f} p.p" if delta_juridico is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
     with col6:
+        rank, total = rankings_current["indice_total"]
+        delta = None
+        delta_color = "off"
+        if previous_year and "indice_total" in rankings_previous:
+            delta_val = rank - rankings_previous["indice_total"]
+            delta = f"{delta_val:+d}" if delta_val != 0 else "0"
+            delta_color = "inverse" if delta_val != 0 else "off"
         st.metric(
             label=f"📊 Total Index ({latest_year})",
-            value=f"{latest_year_data['indice_total']:.2f}",
-            delta=f"{delta_total:.2f} p.p" if delta_total is not None else None,
+            value=f"{rank}º",
+            delta=delta,
+            delta_color=delta_color,
         )
 
-    # Add legend explaining the delta
-    if previous_year:
-        st.caption(
-            f"📌 Changes shown are compared to the previous year ({previous_year})"
-        )
+    # Show total countries
+    st.caption(f"📊 Total countries: {total}")
 
 
 def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str):
     """Render the index evolution chart."""
     st.subheader(f"Index Evolution - {selected_country}")
-
-    # Chart type selector
-    col1, col2 = st.columns([3, 1])
-    with col2:
-        chart_type = st.radio(
-            "Chart Type",
-            options=["Line", "Bar"],
-            horizontal=True,
-            key="evolution_chart_type",
-        )
 
     fig_evolution = go.Figure()
 
@@ -273,34 +325,20 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
         "indice_total",
     ]
 
-    if chart_type == "Line":
-        for col in indices_cols:
-            fig_evolution.add_trace(
-                go.Scatter(
-                    x=df_main_filtered["year"],
-                    y=df_main_filtered[col],
-                    mode="lines+markers+text",
-                    name=INDEX_LABELS[col],
-                    line=dict(color=INDEX_COLORS[col], width=3),
-                    marker=dict(size=8),
-                    text=[f"{val:.2f}" for val in df_main_filtered[col]],
-                    textposition="top center",
-                    textfont=dict(size=10, color="black"),
-                )
+    for col in indices_cols:
+        fig_evolution.add_trace(
+            go.Scatter(
+                x=df_main_filtered["year"],
+                y=df_main_filtered[col],
+                mode="lines+markers+text",
+                name=INDEX_LABELS[col],
+                line=dict(color=INDEX_COLORS[col], width=3),
+                marker=dict(size=8),
+                text=[f"{val:.2f}" for val in df_main_filtered[col]],
+                textposition="top center",
+                textfont=dict(size=10, color="black"),
             )
-    else:  # Bar chart
-        for col in indices_cols:
-            fig_evolution.add_trace(
-                go.Bar(
-                    x=df_main_filtered["year"],
-                    y=df_main_filtered[col],
-                    name=INDEX_LABELS[col],
-                    marker=dict(color=INDEX_COLORS[col]),
-                    text=[f"{val:.2f}" for val in df_main_filtered[col]],
-                    textposition="outside",
-                    textfont=dict(size=10, color="black"),
-                )
-            )
+        )
 
     fig_evolution.update_layout(
         xaxis_title="Year",
@@ -312,6 +350,8 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
         xaxis=dict(
             tickfont=dict(color="black"),
             title=dict(font=dict(color="black")),
+            dtick=1,
+            tickmode="linear",
         ),
         yaxis=dict(
             tickfont=dict(color="black"),
@@ -324,7 +364,6 @@ def render_evolution_chart(df_main_filtered: pd.DataFrame, selected_country: str
             xanchor="center",
             x=0.5,
         ),
-        barmode="group" if chart_type == "Bar" else None,
     )
 
     st.plotly_chart(fig_evolution, use_container_width=True)
@@ -338,33 +377,20 @@ def render_comparison_chart(
     """Render the country comparison chart."""
     st.subheader("Compare Index Across Countries")
 
-    # Controls in columns
-    col1, col2 = st.columns([3, 1])
-
-    with col1:
-        # Select index to compare
-        index_to_compare = st.selectbox(
-            "Select Index",
-            options=[
-                "indice_total",
-                "indice_socio_cultural",
-                "indice_mercados_negocios",
-                "indice_empreendedorismo",
-                "indice_eficiencia_governo",
-                "indice_ambiente_juridico",
-            ],
-            format_func=lambda x: INDEX_LABELS[x],
-            key="index_comparison",
-        )
-
-    with col2:
-        # Chart type selector
-        chart_type = st.radio(
-            "Chart Type",
-            options=["Line", "Bar"],
-            horizontal=True,
-            key="comparison_chart_type",
-        )
+    # Select index to compare
+    index_to_compare = st.selectbox(
+        "Select Index",
+        options=[
+            "indice_total",
+            "indice_socio_cultural",
+            "indice_mercados_negocios",
+            "indice_empreendedorismo",
+            "indice_eficiencia_governo",
+            "indice_ambiente_juridico",
+        ],
+        format_func=lambda x: INDEX_LABELS[x],
+        key="index_comparison",
+    )
 
     # Determine countries to compare
     countries_to_compare = (
@@ -384,48 +410,36 @@ def render_comparison_chart(
     # Create comparison chart
     fig_comparison = go.Figure()
 
-    if chart_type == "Line":
-        for country in countries_to_compare:
-            df_country = df_comparison[df_comparison["country_name"] == country]
-            fig_comparison.add_trace(
-                go.Scatter(
-                    x=df_country["year"],
-                    y=df_country[index_to_compare],
-                    mode="lines+markers+text",
-                    name=country,
-                    line=dict(width=3, color=country_colors[country]),
-                    marker=dict(size=8, color=country_colors[country]),
-                    text=[f"{val:.2f}" for val in df_country[index_to_compare]],
-                    textposition="top center",
-                    textfont=dict(size=10, color="black"),
-                )
+    for country in countries_to_compare:
+        df_country = df_comparison[df_comparison["country_name"] == country]
+        fig_comparison.add_trace(
+            go.Scatter(
+                x=df_country["year"],
+                y=df_country[index_to_compare],
+                mode="lines+markers+text",
+                name=country,
+                line=dict(width=3, color=country_colors[country]),
+                marker=dict(size=8, color=country_colors[country]),
+                text=[f"{val:.2f}" for val in df_country[index_to_compare]],
+                textposition="top center",
+                textfont=dict(size=10, color="black"),
+                hovertemplate="<b>%{fullData.name}</b><br>Year: %{x}<br>Value: %{y:.2f}<extra></extra>",
             )
-    else:  # Bar chart
-        for country in countries_to_compare:
-            df_country = df_comparison[df_comparison["country_name"] == country]
-            fig_comparison.add_trace(
-                go.Bar(
-                    x=df_country["year"],
-                    y=df_country[index_to_compare],
-                    name=country,
-                    marker=dict(color=country_colors[country]),
-                    text=[f"{val:.2f}" for val in df_country[index_to_compare]],
-                    textposition="outside",
-                    textfont=dict(size=10, color="black"),
-                )
-            )
+        )
 
     fig_comparison.update_layout(
         title=f"{INDEX_LABELS[index_to_compare]} - Country Comparison",
         xaxis_title="Year",
         yaxis_title="Index Value",
-        hovermode="x unified",
+        hovermode="closest",
         height=500,
         template="plotly_white",
         font=dict(color="black"),
         xaxis=dict(
             tickfont=dict(color="black"),
             title=dict(font=dict(color="black")),
+            dtick=1,
+            tickmode="linear",
         ),
         yaxis=dict(
             tickfont=dict(color="black"),
@@ -438,7 +452,6 @@ def render_comparison_chart(
             xanchor="center",
             x=0.5,
         ),
-        barmode="group" if chart_type == "Bar" else None,
     )
 
     st.plotly_chart(fig_comparison, use_container_width=True)
@@ -736,12 +749,6 @@ def render_methodology_page():
     - Data coverage: 2015 - 2023
     - Annual updates
     - Historical comparisons available
-    
-    #### Citation
-    
-    If you use this data in your research, please cite:
-    
-    *[Authors]. (Year). Institutional Complexity Index Database. [Institution].*
     """)
 
 
@@ -857,6 +864,23 @@ def render_download_page():
             years=tuple(range(download_years[0], download_years[1] + 1))
         )
 
+    # Remove n_dims_ok column and rename columns to descriptive names
+    df_download = df_download.drop(columns=["n_dims_ok"], errors="ignore")
+
+    df_download = df_download.rename(
+        columns={
+            "country_name": "Country Name",
+            "country_cod": "Country Code",
+            "year": "Year",
+            "indice_socio_cultural": "Socio-Cultural Index",
+            "indice_mercados_negocios": "Markets & Business Index",
+            "indice_empreendedorismo": "Entrepreneurship Index",
+            "indice_eficiencia_governo": "Government Efficiency Index",
+            "indice_ambiente_juridico": "Legal Environment Index",
+            "indice_total": "Total Complexity Index",
+        }
+    )
+
     st.markdown(f"**Total records:** {len(df_download):,}")
 
     # Preview data
@@ -868,7 +892,7 @@ def render_download_page():
     # Download buttons
     st.markdown("### Download Options")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
         # CSV download
@@ -895,64 +919,7 @@ def render_download_page():
             use_container_width=True,
         )
 
-    with col3:
-        # JSON download
-        json_data = df_download.to_json(orient="records", indent=2)
-        st.download_button(
-            label="🔧 Download as JSON",
-            data=json_data,
-            file_name=f"institutional_complexity_index_{download_years[0]}_{download_years[1]}.json",
-            mime="application/json",
-            use_container_width=True,
-        )
-
     st.markdown("---")
-
-    # Data dictionary
-    st.markdown("### Data Dictionary")
-
-    data_dict = pd.DataFrame(
-        {
-            "Column Name": [
-                "country_name",
-                "country_cod",
-                "year",
-                "indice_socio_cultural",
-                "indice_mercados_negocios",
-                "indice_empreendedorismo",
-                "indice_eficiencia_governo",
-                "indice_ambiente_juridico",
-                "n_dims_ok",
-                "indice_total",
-            ],
-            "Description": [
-                "Full name of the country",
-                "ISO 3-letter country code",
-                "Year of observation",
-                "Socio-Cultural Index (0-100)",
-                "Markets & Business Index (0-100)",
-                "Entrepreneurship Index (0-100)",
-                "Government Efficiency Index (0-100)",
-                "Legal Environment Index (0-100)",
-                "Number of dimensions with valid data",
-                "Total Complexity Index (0-100)",
-            ],
-            "Type": [
-                "String",
-                "String",
-                "Integer",
-                "Float",
-                "Float",
-                "Float",
-                "Float",
-                "Float",
-                "Integer",
-                "Float",
-            ],
-        }
-    )
-
-    st.dataframe(data_dict, use_container_width=True, hide_index=True)
 
     st.info("""
     **Note:** All index values range from 0 to 100, where higher values indicate 
@@ -1064,12 +1031,6 @@ def render_home_page():
     3. **Explore the visualizations** - switch between different chart types
     4. **Compare countries** by selecting additional countries in the sidebar
     5. **Adjust the year range** to focus on specific time periods
-    
-    ---
-    
-    <div style="text-align: center; color: #666; padding: 20px;">
-        <p>💡 <strong>Tip:</strong> Use the sidebar filters to customize your analysis</p>
-    </div>
     """,
         unsafe_allow_html=True,
     )
@@ -1186,7 +1147,7 @@ def main():
 
         # Display overview section
         st.header(f"📈 Overview: {selected_country}")
-        render_metrics(df_main_filtered)
+        render_metrics(df_main_filtered, selected_country)
 
         st.markdown("---")
 
@@ -1213,8 +1174,6 @@ def main():
                 "nav-link-selected": {"background-color": "#4C82F7"},
             },
         )
-
-        st.markdown("---")
 
         # Render selected visualization
         if selected_tab == "Index Evolution":
