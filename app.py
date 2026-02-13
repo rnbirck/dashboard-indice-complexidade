@@ -247,15 +247,37 @@ def _render_dashboard_page(selected_country, comparison_countries, year_range):
         orientation="horizontal",
         key="visualization_tabs",
         styles={
-            "container": {"padding": "0!important", "background-color": "#fafafa"},
-            "icon": {"color": "#4C82F7", "font-size": "18px"},
+            "container": {
+                "padding": "8px",
+                "background-color": "transparent",
+                "margin": "0",
+                "display": "flex",
+                "justify-content": "center",
+                "gap": "10px",
+            },
+            "icon": {
+                "color": "inherit",
+                "font-size": "16px",
+            },
             "nav-link": {
                 "font-size": "14px",
+                "font-weight": "500",
                 "text-align": "center",
-                "margin": "0px",
-                "--hover-color": "#eee",
+                "padding": "10px 24px",
+                "border-radius": "20px",
+                "color": "#1a1a1a",
+                "background-color": "#f0f2f6",
+                "--hover-color": "#e0e4eb",
+                "transition": "all 0.2s ease",
+                "border": "1px solid #e0e4eb",
             },
-            "nav-link-selected": {"background-color": "#4C82F7"},
+            "nav-link-selected": {
+                "background": "linear-gradient(135deg, #4C82F7 0%, #3a6fd8 100%)",
+                "color": "white",
+                "font-weight": "600",
+                "border": "none",
+                "box-shadow": "0 3px 10px rgba(76, 130, 247, 0.3)",
+            },
         },
     )
 

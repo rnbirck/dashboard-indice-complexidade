@@ -59,12 +59,14 @@ SMTP_PORT=587
 SENDER_EMAIL=seu.email@gmail.com
 SENDER_PASSWORD=xxxx xxxx xxxx xxxx
 ADMIN_EMAIL=seu.email@gmail.com
+ADDITIONAL_NOTIFICATION_EMAILS=email1@example.com,email2@example.com
 ```
 
 **Onde:**
 - `SENDER_EMAIL`: Seu email do Gmail (ex: joao.silva@gmail.com)
 - `SENDER_PASSWORD`: A senha de app de 16 caracteres que você copiou (pode incluir ou remover os espaços)
 - `ADMIN_EMAIL`: O email onde você quer receber as notificações de download
+- `ADDITIONAL_NOTIFICATION_EMAILS`: (Opcional) Emails adicionais que receberão notificações, separados por vírgula
 
 ---
 

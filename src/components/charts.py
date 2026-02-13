@@ -197,25 +197,33 @@ def render_radar_chart(
         )
 
     # Radar chart options
-    col1, col2 = st.columns([1, 1])
+    col1, col2 = st.columns([1, 2])
 
     with col1:
         # Select year for radar chart
         available_years = sorted(df_comparison["year"].unique(), reverse=True)
         selected_radar_year = st.selectbox(
-            "Select Year",
+            "📅 Select Year",
             options=available_years,
             index=0,
             key="radar_year",
         )
 
     with col2:
-        # Display mode option
-        display_mode = st.selectbox(
-            "Display Mode",
-            options=["Overlay (Single Chart)", "Side by Side (Individual Charts)"],
+        # Display mode option with radio buttons - aligned with selectbox
+        display_mode_selection = st.radio(
+            "📊 Display Mode",
+            options=["Overlay", "Side by Side"],
             index=0,
             key="radar_display_mode",
+            horizontal=True,
+        )
+
+        # Map to the full mode names
+        display_mode = (
+            "Overlay (Single Chart)"
+            if display_mode_selection == "Overlay"
+            else "Side by Side (Individual Charts)"
         )
 
     # Get consistent color mapping

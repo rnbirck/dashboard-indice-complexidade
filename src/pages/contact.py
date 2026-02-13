@@ -83,7 +83,17 @@ def _send_contact_email(name, email, subject, message):
     sender_password = os.getenv("SENDER_PASSWORD")
     admin_email = os.getenv("ADMIN_EMAIL")
 
-    if not all([sender_email, sender_password, admin_email]):
+    # Emails adicionais que receberão notificações (separados por vírgula)
+    additional_emails_str = os.getenv("ADDITIONAL_NOTIFICATION_EMAILS", "")
+    additional_emails = [
+        email.strip() for email in additional_emails_str.split(",") if email.strip()
+    ]
+
+    # Criar lista completa de destinatários
+    admin_emails = [admin_email] if admin_email else []
+    admin_emails.extend(additional_emails)
+
+    if not all([sender_email, sender_password]) or not admin_emails:
         st.error("❌ Email configuration not found. Please contact the administrator.")
         st.info("""
         **For Administrator:** Please configure the following environment variables:
@@ -92,13 +102,14 @@ def _send_contact_email(name, email, subject, message):
         - SENDER_EMAIL
         - SENDER_PASSWORD
         - ADMIN_EMAIL
+        - ADDITIONAL_NOTIFICATION_EMAILS (optional, comma-separated)
         """)
         return
 
     # Send email to admin (contact form submission)
     msg_admin = MIMEMultipart()
     msg_admin["From"] = sender_email
-    msg_admin["To"] = admin_email
+    msg_admin["To"] = ", ".join(admin_emails)
     msg_admin["Subject"] = f"Contact Form Submission: {subject}"
 
     body_admin = f"""
