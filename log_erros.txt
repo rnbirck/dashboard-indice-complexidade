@@ -34,3 +34,21 @@ SELECT country_name,
 FROM indice_complexidade_institucional
 ]
 (Background on this error at: https://sqlalche.me/e/20/f405)
+Erro no upload: (psycopg2.errors.UndefinedColumn) column "n_dims_ok" does not exist
+LINE 10:        n_dims_ok,
+                ^
+
+[SQL: 
+SELECT country_name,
+       country_cod,
+       year,
+       indice_socio_cultural,
+       indice_mercados_negocios,
+       indice_empreendedorismo,
+       indice_eficiencia_governo,
+       indice_ambiente_juridico,
+       n_dims_ok,
+       indice_total
+FROM indice_complexidade_institucional
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)

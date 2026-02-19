@@ -145,8 +145,6 @@ def _process_download_request(
             years=tuple(range(download_years[0], download_years[1] + 1))
         )
 
-    # Remove n_dims_ok column and rename columns
-    df_download = df_download.drop(columns=["n_dims_ok"], errors="ignore")
     df_download = df_download.rename(
         columns={
             "country_name": "Country Name",
