@@ -4,6 +4,7 @@ credentials.json
 .env
 .env.*
 .streamlit/secrets.toml
+/idsuporttest12345@gmail.com.txt
 
 *.pyc
 __pycache__/

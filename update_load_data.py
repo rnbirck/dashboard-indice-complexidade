@@ -5,7 +5,7 @@
 # 1. UPLOAD: Transferência de dados do PostgreSQL local para o Supabase
 # 2. LOAD: Funções de leitura dos dados do Supabase para o dashboard
 # ==============================================================================
-
+# %%
 import os
 import time
 import pandas as pd
@@ -191,7 +191,6 @@ SELECT country_name,
        indice_empreendedorismo,
        indice_eficiencia_governo,
        indice_ambiente_juridico,
-       n_dims_ok,
        indice_total
 FROM indice_complexidade_institucional
 """
