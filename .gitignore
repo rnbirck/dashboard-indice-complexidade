@@ -14,3 +14,7 @@ venv/
 .vscode/
 .idea/
 *.xlsx
+
+/.local/
+/logs/
+/data/

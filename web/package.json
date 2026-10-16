@@ -1,0 +1,36 @@
+{
+  "name": "indice-complexidade-react",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build && vite build --ssr server/iniciar.ts --outDir dist-server",
+    "start": "node dist-server/iniciar.js",
+    "local": "npm run build && npm start",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "dados:gerar": "python -X utf8 scripts/gerar_dados.py"
+  },
+  "dependencies": {
+    "@fontsource-variable/public-sans": "5.3.0",
+    "bootstrap-icons": "1.13.2",
+    "echarts": "6.1.0",
+    "fflate": "0.8.3",
+    "nodemailer": "10.0.13",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.4",
+    "typescript": "6.0.2",
+    "vite": "8.2.0",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

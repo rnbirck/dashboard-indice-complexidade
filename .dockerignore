@@ -1,0 +1,6 @@
+# A imagem do Railway só precisa da pasta web/; o app Streamlit, os dados e o .env ficam de fora.
+*
+!web/
+web/node_modules
+web/dist
+web/dist-server

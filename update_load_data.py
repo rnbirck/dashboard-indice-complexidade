@@ -1,3 +1,4 @@
+from pathlib import Path
 # ==============================================================================
 # UPDATE & LOAD DATA MODULE - ÍNDICE DE COMPLEXIDADE INSTITUCIONAL
 # ==============================================================================
@@ -279,7 +280,9 @@ def upload_data_to_supabase(batch_size: int = 500):
 
     except Exception as e:
         print(f"❌ ERRO ao processar upload: {e}")
-        with open("log_erros.txt", "a", encoding="utf-8") as log_file:
+        log_path = Path(__file__).resolve().parent / "logs" / "log_erros.txt"
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with log_path.open("a", encoding="utf-8") as log_file:
             log_file.write(f"Erro no upload: {e}\n")
 
 
