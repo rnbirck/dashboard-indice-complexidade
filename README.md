@@ -1,21 +1,19 @@
 # Índice de Complexidade
 
-Aplicação Python/Streamlit com entrada em `app.py`, acesso a dados em `db.py` e
-atualização em `update_load_data.py`. Consulte as [instruções](AGENTS.md) antes de
-executar a atualização, que possui efeitos no banco e em serviços externos.
+Painel React do índice de complexidade institucional, em [`web/`](web/README.md). Os dados
+vão embutidos no build como JSON gerado do banco `cei` por `web/scripts/gerar_dados.py`, e
+um servidor Node entrega o site e envia os e-mails dos formulários pelo SMTP do Gmail. O
+`Dockerfile` e o `railway.json` da raiz publicam o painel no serviço do Railway. Consulte as
+[instruções](AGENTS.md) antes de carregar dados, porque `db.py` grava no banco.
 
-- `requirements.txt` e `Procfile`: dependências e entrada de hospedagem.
+- `db.py`: carga de `data/indice_complexidade_institucional_by_year.xlsx` em
+  `cei.indice_complexidade_institucional`.
 - `docs/`: [configuração de e-mail](docs/CONFIGURACAO_EMAIL.md).
-- `logs/`: registros de execução; a atualização grava aqui `log_erros.txt`.
 - `.local/`: configuração pessoal preservada e ignorada pelo Git.
 - `data/`: atalho oculto para `DADOS/derivados/indice_complexidade/planilhas_modelo`.
 
 A extração `db_csv.csv` está em `DADOS/derivados/indice_complexidade`.
 
-## Versão React (em validação)
-
-`web/` replica este app em React, com os dados num JSON estático e sem Supabase. Um
-servidor Node entrega o site e envia os e-mails dos formulários pelo mesmo SMTP do Gmail.
-O `Dockerfile` e o `railway.json` da raiz fazem o serviço do Railway publicar a versão
-React no mesmo endereço; o código Streamlit continua no repositório para voltar, se
-preciso. Veja o [README da versão React](web/README.md).
+O antigo app Streamlit (`app.py`, `src/` e `update_load_data.py`, que enviava os dados ao
+Supabase) saiu do repositório em 17/10/2026 e continua no histórico do git até o commit
+`a54d10d`.

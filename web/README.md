@@ -1,6 +1,7 @@
 # Índice de Complexidade — versão React
 
-Versão React + Vite do app Streamlit (`../app.py`), sem Supabase. Os dados vão
+Versão React + Vite que substituiu o app Streamlit, sem Supabase. O Streamlit saiu do
+repositório em 17/10/2026 e continua no histórico do git até o commit `a54d10d`. Os dados vão
 embutidos no build como JSON estático. Um servidor Node pequeno entrega o site e recebe
 os formulários **Contact Us** e **Data Download**, que enviam e-mail pelo SMTP do Gmail
 com as mesmas variáveis do app Streamlit. Roda no mesmo serviço do Railway e no mesmo
@@ -69,11 +70,11 @@ Para testar o envio sem mandar e-mail de verdade, rode o servidor com `SMTP_SERV
 
 ## Publicação no Railway
 
-O serviço do Railway que hoje roda o Streamlit passa a construir o `Dockerfile` da raiz
-(indicado no `railway.json`), no mesmo endereço. Um push para a branch que o serviço
-acompanha publica a nova versão; o Railway só troca quando `/healthz` responde. Para
-voltar ao Streamlit, use "Redeploy" numa implantação anterior no painel do Railway, ou
-reverta o commit.
+O serviço do Railway que rodava o Streamlit constrói o `Dockerfile` da raiz (indicado no
+`railway.json`), no mesmo endereço. Um push para a branch que o serviço acompanha publica
+a nova versão; o Railway só troca quando `/healthz` responde. Para voltar ao Streamlit,
+use "Redeploy" numa implantação anterior no painel do Railway, ou restaure o código do
+commit `a54d10d`.
 
 As variáveis são as mesmas que o serviço já tem:
 
