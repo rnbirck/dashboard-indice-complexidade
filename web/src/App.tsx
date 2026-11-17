@@ -116,7 +116,7 @@ export function App() {
         <main className="conteudo">
           <div className="conteudo-interno">
             {pagina === 'Home' && <Home irPara={setPagina} abrirPais={abrirPais} />}
-            {pagina === 'Dashboard' && <Dashboard filtros={filtros} abrirFiltros={() => setLateralAberta(true)} />}
+            {pagina === 'Dashboard' && <Dashboard filtros={filtros} abrirFiltros={() => setLateralAberta(true)} escolherPais={abrirPais} />}
             {pagina === 'Methodology' && <Methodology />}
             {pagina === 'Authors' && <Authors />}
             {pagina === 'Contact Us' && <Contact />}

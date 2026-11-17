@@ -1287,6 +1287,12 @@ button.radar-lista-linha:hover,
   color: var(--tinta-2);
 }
 
+.vazio-escolha {
+  width: min(100%, 320px);
+  margin: 8px 0 4px;
+  text-align: left;
+}
+
 .vazio-titulo {
   color: var(--tinta);
   font-size: 17px;

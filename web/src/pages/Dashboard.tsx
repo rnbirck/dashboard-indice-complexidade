@@ -6,6 +6,7 @@ import {
   INDEX_LABELS,
   INDEX_SHORT,
   INDICES,
+  PAISES,
   carregarDados,
   intervaloAnos,
   posicao,
@@ -14,6 +15,7 @@ import {
 } from '../../shared/dados';
 import { EChart, type Instancia } from '../components/EChart';
 import { Icone } from '../components/OptionMenu';
+import { Selectbox } from '../components/Select';
 import { corPais, type Filtros } from '../components/Sidebar';
 import { Alert, Button, Painel, Segmented } from '../components/st';
 import { APAGADO, BASE, EIXO, EIXO_X_ANOS, EIXO_Y_VALOR, TINTA, TINTA_2, GRADE, rgba } from '../lib/tema';
@@ -58,7 +60,11 @@ function ordinal(n: number): string {
   return `${n}${({ 1: 'st', 2: 'nd', 3: 'rd' } as Record<number, string>)[n % 10] ?? 'th'}`;
 }
 
-export function Dashboard({ filtros, abrirFiltros }: { filtros: Filtros; abrirFiltros: () => void }) {
+export function Dashboard({ filtros, abrirFiltros, escolherPais }: {
+  filtros: Filtros;
+  abrirFiltros: () => void;
+  escolherPais: (pais: string) => void;
+}) {
   const { pais, comparacao, anos } = filtros;
   const [aba, setAba] = useState<Aba>('Index Evolution');
 
@@ -75,8 +81,19 @@ export function Dashboard({ filtros, abrirFiltros }: { filtros: Filtros; abrirFi
     return (
       <div className="painel vazio">
         <p className="vazio-titulo">Choose a country to start</p>
-        <p>Pick a main country in the filters. You can add up to seven more to compare.</p>
-        <Button onClick={abrirFiltros}>Open filters</Button>
+        <p>Pick a main country below. In the filters you can add up to seven more to compare.</p>
+        <div className="vazio-escolha">
+          <Selectbox
+            label="Main country"
+            options={PAISES}
+            placeholder="Choose a country..."
+            value={null}
+            onChange={(novo) => novo && escolherPais(novo)}
+          />
+        </div>
+        <Button variante="secundario" onClick={abrirFiltros}>
+          Open filters
+        </Button>
       </div>
     );
   }
